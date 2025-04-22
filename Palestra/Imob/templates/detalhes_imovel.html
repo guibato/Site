@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ imovel.titulo }} - Minha Imobiliária{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Imagens do Imóvel -->
+    <div class="md:col-span-2">
+        <img src="{{ imovel.imagem.url }}" alt="{{ imovel.titulo }}" class="w-full h-96 object-cover rounded-lg">
+        <h2 class="mt-4 text-2xl font-bold">{{ imovel.titulo }}</h2>
+        <p class="mt-2 text-gray-700">{{ imovel.descricao }}</p>
+    </div>
+
+    <!-- Detalhes do Imóvel -->
+    <div>
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <h3 class="text-lg font-bold mb-4">Detalhes</h3>
+            <p><strong>Preço:</strong> R$ {{ imovel.preco }}</p>
+            <p><strong>Quartos:</strong> {{ imovel.quartos }}</p>
+            <p><strong>Banheiros:</strong> {{ imovel.banheiros }}</p>
+            <p><strong>Área:</strong> {{ imovel.area }} m²</p>
+            <a href="#" class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600">Entrar em contato</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

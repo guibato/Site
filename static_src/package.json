@@ -1,0 +1,17 @@
+{
+  "name": "static_src",
+  "version": "1.0.0",
+  "description": "Static files for Django project using Tailwind CSS",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tailwindcss -i ./src/input.css -o ../static/css/styles.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.3"
+  }
+}
