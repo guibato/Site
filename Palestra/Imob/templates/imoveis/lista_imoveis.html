@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load imob_filters %}
+{% load l10n %}
+{% load humanize %}
+
+{% block title %}Lista de Imóveis - Palestra Imóveis{% endblock %}
+
+{% block content %}
+<!-- Banner da Página -->
+<div class="bg-blue-600 text-white py-12 rounded-lg mb-8">
+    <h1 class="text-4xl font-bold text-center">Nossos Imóveis</h1>
+    <p class="text-xl text-center mt-2">Encontre o imóvel perfeito para você e sua família</p>
+</div>
+
+<!-- Filtro de Pesquisa -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" name="cidade" class="p-3 border rounded" placeholder="Cidade">
+        <select name="tipo" class="p-3 border rounded">
+            <option value="">Tipo de imóvel</option>
+            <option value="casa">Casa</option>
+            <option value="apartamento">Apartamento</option>
+            <option value="terreno">Terreno</option>
+            <option value="comercial">Comercial</option>
+            <option value="rural">Rural</option>
+        </select>
+        <select name="negocio" class="p-3 border rounded">
+            <option value="">Negócio</option>
+            <option value="venda">Venda</option>
+            <option value="aluguel">Aluguel</option>
+        </select>
+        <button type="submit" class="bg-blue-500 text-white p-3 rounded hover:bg-blue-600">Filtrar</button>
+    </form>
+</div>
+
+<!-- Lista de Imóveis -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for imovel in imoveis %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+        <div class="relative">
+            
+            {% with primeira_foto=imovel.fotos.first %}
+                {% if primeira_foto %}
+                    <img src="{{ primeira_foto.imagem.url }}" class="w-full h-56 object-cover" alt="{{ imovel.titulo }}">
+                {% else %}
+                    <div class="w-full h-56 bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500">Sem imagem</span>
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <div class="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 m-2 rounded-full">
+                {% if imovel.negocio == 'venda' %}
+                Venda
+                {% else %}
+                Locação
+                {% endif %}
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2 text-gray-800">{{ imovel.titulo }}</h3>
+            <p class="text-gray-600 mb-4">{{ imovel.descricao|truncatewords:15 }}</p>
+            
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span>{{ imovel.quartos }} quartos</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-gray-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                        </svg>
+                        <span>{{ imovel.banheiros }} banheiros</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+                
+                <p class="text-blue-600 font-bold text-xl"> {{ imovel.preco_formatado }}</p>
+                
+                <a href="{% url 'detalhes_imovel' imovel.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">Ver Detalhes</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-8">
+        <p class="text-gray-600 text-lg">Nenhum imóvel encontrado com os filtros selecionados.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Paginação -->
+{% if imoveis.has_other_pages %}
+<div class="flex justify-center mt-10">
+    <div class="flex space-x-1">
+        {% if imoveis.has_previous %}
+        <a href="?page={{ imoveis.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Anterior</a>
+        {% endif %}
+        
+        {% for i in imoveis.paginator.page_range %}
+        {% if imoveis.number == i %}
+        <span class="px-4 py-2 bg-blue-500 text-white border border-blue-500 rounded-md">{{ i }}</span>
+        {% else %}
+        <a href="?page={{ i }}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">{{ i }}</a>
+        {% endif %}
+        {% endfor %}
+        
+        {% if imoveis.has_next %}
+        <a href="?page={{ imoveis.next_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Próxima</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

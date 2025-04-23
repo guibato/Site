@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md my-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        Cadastrar Imóvel
+    </h1>
+    <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        <!-- Dados principais do imóvel -->
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Informações Básicas
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ field.label }}{% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Fotos do imóvel -->
+        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Fotos do Imóvel
+            </h2>
+            {{ formset.management_form }}
+            <div id="foto-formset" class="space-y-4">
+                {% for form in formset %}
+                    <div class="foto-form border border-gray-200 p-4 rounded-md bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-grow">
+                                {{ form.as_p }}
+                            </div>
+                            {% if not forloop.first %}
+                                <button type="button" class="remove-foto text-red-500 hover:text-red-700 focus:outline-none ml-2" title="Remover foto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            {% endif %}
+                        </div>
+                        <div class="preview-container mt-2 hidden">
+                            <img class="image-preview max-h-40 rounded border border-gray-200" alt="Preview">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-foto" class="mt-4 flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Adicionar Foto
+            </button>
+        </div>
+        <!-- Exibir erros globais do formset -->
+        {% if formset.non_form_errors %}
+            <div class="text-red-600 text-sm mt-4">{{ formset.non_form_errors }}</div>
+        {% endif %}
+        <div class="flex justify-end mt-6">
+            <button type="button" class="bg-gray-300 text-gray-700 px-6 py-2 rounded mr-4 hover:bg-gray-400 transition duration-200">
+                Cancelar
+            </button>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Salvar Imóvel
+            </button>
+        </div>
+    </form>
+</div>
+<!-- Template vazio para adicionar novas fotos dinamicamente -->
+<div id="{{ formset.prefix }}-empty" style="display:none;">
+    <div class="foto-form border border-gray-200 p-4 rounded-md bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+        <div class="flex justify-between items-start">
+            <div class="flex-grow">
+                {{ formset.empty_form.as_p }}
+            </div>
+            <button type="button" class="remove-foto text-red-500 hover:text-red-700 focus:outline-none ml-2" title="Remover foto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>
+        </div>
+        <div class="preview-container mt-2 hidden">
+            <img class="image-preview max-h-40 rounded border border-gray-200" alt="Preview">
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Verifica se o botão existe e imprime no console
+    const addButton = document.getElementById("add-foto");
+    if (!addButton) {
+        console.error("Botão 'add-foto' não encontrado!");
+        return;
+    }
+    
+    const formsetPrefix = "{{ formset.prefix }}";
+    const formsetContainer = document.getElementById("foto-formset");
+    if (!formsetContainer) {
+        console.error("Container 'foto-formset' não encontrado!");
+        return;
+    }
+    
+    const emptyFormTemplate = document.getElementById(`${formsetPrefix}-empty`);
+    if (!emptyFormTemplate) {
+        console.error(`Template vazio '${formsetPrefix}-empty' não encontrado!`);
+        return;
+    }
+    
+    // Adiciona um log no console para debug
+    console.log("Inicializando script de fotos...");
+    
+    // Adicionar nova foto - com log explícito para debug
+    addButton.addEventListener("click", function () {
+        console.log("Botão de adicionar foto clicado!");
+        
+        const totalFormsInput = document.getElementById(`id_${formsetPrefix}-TOTAL_FORMS`);
+        if (!totalFormsInput) {
+            console.error(`Input 'id_${formsetPrefix}-TOTAL_FORMS' não encontrado!`);
+            return;
+        }
+        
+        const formCount = parseInt(totalFormsInput.value);
+        console.log(`Formulários atuais: ${formCount}`);
+        
+        // Clone o template vazio
+        const newForm = emptyFormTemplate.cloneNode(true);
+        newForm.style.display = 'block';
+        newForm.id = `${formsetPrefix}-form-${formCount}`;
+        
+        // Atualiza IDs e names
+        newForm.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.name) {
+                const newName = input.name.replace('__prefix__', formCount);
+                input.name = newName;
+                console.log(`Renomeando input: ${input.name}`);
+            }
+            if (input.id) input.id = input.id.replace('__prefix__', formCount);
+        });
+        
+        newForm.querySelectorAll('label').forEach(label => {
+            if (label.htmlFor) label.htmlFor = label.htmlFor.replace('__prefix__', formCount);
+        });
+        
+        // Adiciona listener para remoção
+        const removeButton = newForm.querySelector('.remove-foto');
+        if (removeButton) {
+            removeButton.addEventListener('click', function() {
+                const deleteInput = newForm.querySelector('input[name$="-DELETE"]');
+                if (deleteInput) {
+                    deleteInput.checked = true;
+                    newForm.style.display = 'none';
+                } else {
+                    newForm.remove();
+                }
+            });
+        }
+        
+        // Adiciona listener para preview de imagem
+        setupImagePreview(newForm);
+        
+        // Adiciona o novo formulário ao container
+        formsetContainer.appendChild(newForm);
+        
+        // Atualiza o contador de formulários
+        totalFormsInput.value = formCount + 1;
+        console.log(`Novo total de formulários: ${totalFormsInput.value}`);
+    });
+    
+    // Preview de imagem ao selecionar arquivo
+    function setupImagePreview(container) {
+        const fileInput = container.querySelector('input[type="file"]');
+        const previewContainer = container.querySelector('.preview-container');
+        const imagePreview = container.querySelector('.image-preview');
+        
+        if (fileInput && previewContainer && imagePreview) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    previewContainer.classList.add('hidden');
+                }
+            });
+        }
+    }
+    
+    // Configurar preview de imagem para formulários existentes
+    document.querySelectorAll('.foto-form').forEach(form => {
+        setupImagePreview(form);
+    });
+    
+    // Estilizar campos do formulário
+    document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], select, textarea').forEach(input => {
+        input.classList.add('w-full', 'p-2', 'border', 'border-gray-300', 'rounded', 'focus:ring-blue-500', 'focus:border-blue-500');
+    });
+    
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.classList.add('block', 'w-full', 'text-sm', 'text-gray-500', 'file:mr-4', 'file:py-2', 'file:px-4', 
+            'file:rounded', 'file:border-0', 'file:text-sm', 'file:font-semibold', 
+            'file:bg-blue-50', 'file:text-blue-700', 'hover:file:bg-blue-100');
+    });
+    
+    document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.classList.add('h-4', 'w-4', 'text-blue-600', 'focus:ring-blue-500', 'border-gray-300', 'rounded');
+    });
+    
+    // Adiciona um log para confirmar que o script foi carregado completamente
+    console.log("Script de fotos inicializado com sucesso!");
+});
+</script>
+<style>
+/* Escondendo os labels de DELETE do formset */
+input[name$="-DELETE"] {
+    display: none;
+}
+label[for$="-DELETE"] {
+    display: none;
+}
+</style>
+{% endblock %}

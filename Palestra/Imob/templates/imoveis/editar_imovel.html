@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Imóvel{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6">Editar Imóvel</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- O mesmo conteúdo do formulário de cadastro -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- Campos do imóvel -->
+            <div class="col-span-2">
+                <label class="block text-gray-700 font-semibold mb-2">Título</label>
+                {{ form.titulo }}
+            </div>
+            
+            <!-- Outros campos... (mesmo conteúdo do formulário de cadastro) -->
+        </div>
+        
+        <!-- Fotos do imóvel -->
+        <h2 class="text-xl font-bold mb-4">Fotos do Imóvel</h2>
+        
+        {{ formset.management_form }}
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {% for foto_form in formset %}
+                <div class="border p-4 rounded-lg">
+                    {{ foto_form.id }}
+                    
+                    <div class="mb-3">
+                        <label class="block text-gray-700 font-semibold mb-2">Foto</label>
+                        {{ foto_form.imagem }}
+                    </div>
+                    
+                    <div>
+                        <label class="inline-flex items-center">
+                            {{ foto_form.principal }}
+                            <span class="ml-2 text-gray-700">Foto principal</span>
+                        </label>
+                    </div>
+                    
+                    {% if foto_form.instance.pk and foto_form.instance.imagem %}
+                        <div class="mt-2">
+                            <img src="{{ foto_form.instance.imagem.url }}" alt="Foto do imóvel" class="w-full h-32 object-cover rounded">
+                        </div>
+                    {% endif %}
+                    
+                    {% if formset.can_delete %}
+                        <div class="mt-2">
+                            <label class="inline-flex items-center text-red-600">
+                                {{ foto_form.DELETE }}
+                                <span class="ml-2">Excluir foto</span>
+                            </label>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="flex justify-end">
+            <a href="{% url 'detalhes_imovel' imovel_id=imovel.id %}" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Cancelar</a>
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

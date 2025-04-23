@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Excluir Imóvel{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-center">Confirmar Exclusão</h1>
+    
+    <div class="mb-6 text-center">
+        <p class="text-lg mb-2">Você está prestes a excluir o imóvel:</p>
+        <p class="text-xl font-bold text-red-600">{{ imovel.titulo }}</p>
+        <p class="mt-4 text-gray-600">Esta ação não pode ser desfeita.</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="flex justify-center">
+            <a href="{% url 'detalhes_imovel' imovel_id=imovel.id %}" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 mr-2">Cancelar</a>
+            <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">Confirmar Exclusão</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,55 +1,255 @@
 {% extends 'base.html' %}
-{% load static %} <!-- Adicione esta linha -->
+{% load static %}
 
-{% block title %}Início - Minha Imobiliária{% endblock %}
+{% block title %}Palestra Imóveis{% endblock %}
 
 {% block content %}
-<!-- Banner Principal -->
-<div class="relative bg-cover bg-center h-[400px]" style="background-image: url('{% static 'images/banner.jpg' %}');">
-    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
-        <div class="text-center">
-            <h1 class="text-5xl font-bold mb-4">Encontre seu próximo lar</h1>
-            <p class="text-xl mb-6">Explore imóveis à venda e para alugar em todo o Brasil.</p>
-            <a href="#" class="inline-block px-8 py-3 bg-blue-500 rounded-full font-semibold hover:bg-blue-600">Buscar imóveis</a>
+<!-- Hero Section with Search -->
+<section class="relative bg-cover bg-center h-[600px]" style="background-image: url('{% static 'images/banner.jpg' %}');">
+    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+    <div class="container mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+        <div class="text-center text-white max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">Encontre o imóvel perfeito para você</h1>
+            <p class="text-xl md:text-2xl mb-8">Os melhores imóveis em toda região com as melhores condições do mercado.</p>
+        </div>
+        
+        <!-- Formulário de Busca -->
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="col-span-1 md:col-span-3">
+                    <h3 class="font-semibold text-gray-700 mb-2">O que você está procurando?</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="objetivo" value="comprar" class="mr-2" checked>
+                            <span>Comprar</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="objetivo" value="alugar" class="mr-2">
+                            <span>Alugar</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="endereco">
+                        Localização
+                    </label>
+                    <input type="text" name="endereco" id="endereco" placeholder="Cidade, bairro ou região" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="tipo">
+                        Tipo de imóvel
+                    </label>
+                    <select name="tipo" id="tipo" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Qualquer tipo</option>
+                        <option value="Casa">Casa</option>
+                        <option value="Apartamento">Apartamento</option>
+                        <option value="Terreno">Terreno</option>
+                        <option value="Comercial">Comercial</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="preco">
+                        Preço máximo
+                    </label>
+                    <select name="preco" id="preco" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Qualquer valor</option>
+                        <option value="100000">Até R$ 100.000</option>
+                        <option value="250000">Até R$ 250.000</option>
+                        <option value="500000">Até R$ 500.000</option>
+                        <option value="1000000">Até R$ 1.000.000</option>
+                        <option value="5000000">Até R$ 5.000.000</option>
+                    </select>
+                </div>
+
+                <div class="col-span-1 md:col-span-3">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-search mr-2"></i> Buscar Imóveis
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Formulário de Busca -->
-<div class="bg-gray-100 py-8">
+<!-- Características -->
+
+
+<!-- Imóveis Destaque -->
+<section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input type="text" name="endereco" class="col-span-2 p-3 border rounded" placeholder="Endereço">
-            <select name="tipo" class="p-3 border rounded">
-                <option value="">Tipo de imóvel</option>
-                <option value="Casa">Casa</option>
-                <option value="Apartamento">Apartamento</option>
-                <option value="Terreno">Terreno</option>
-            </select>
-            <button type="submit" class="bg-blue-500 text-white p-3 rounded hover:bg-blue-600">Buscar</button>
-        </form>
-    </div>
-</div>
-
-<!-- Lista de Imóveis -->
-<div class="container mx-auto px-4 py-8">
-    <h2 class="text-3xl font-bold text-center mb-8">Imóveis Destacados</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {% if imoveis %}
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold">Imóveis em Destaque</h2>
+            <a href="#" class="text-blue-600 hover:text-blue-800 flex items-center font-medium">
+                Ver todos <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if imoveis %}
             {% for imovel in imoveis %}
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="{{ imovel.imagem.url }}" alt="{{ imovel.titulo }}" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-xl font-bold">{{ imovel.titulo }}</h3>
-                    <p class="text-gray-600">{{ imovel.descricao|truncatewords:20 }}</p>
-                    <p class="mt-2 text-blue-500 font-bold">R$ {{ imovel.preco }}</p>
-                    <a href="{% url 'detalhes_imovel' imovel.id %}" class="mt-4 inline-block text-blue-500 hover:text-blue-700">Ver mais</a>
+<div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+    {% with primeira_foto=imovel.fotos.first %}
+        {% if primeira_foto %}
+            <div class="relative">
+                <img src="{{ primeira_foto.imagem.url }}" alt="{{ imovel.titulo }}" class="w-full h-64 object-cover">
+                <div class="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 m-3 rounded-full text-sm font-medium">
+                    {{ imovel.tipo }}
+                </div>
+                <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-4">
+                    <span class="text-white font-bold text-xl">{{ imovel.preco_formatado }}</span>
                 </div>
             </div>
-            {% endfor %}
         {% else %}
-            <p class="text-center col-span-full text-gray-600">Nenhum imóvel disponível.</p>
+            <div class="relative bg-gray-300 h-64 flex items-center justify-center">
+                <i class="fas fa-home text-gray-400 text-5xl"></i>
+                <div class="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 m-3 rounded-full text-sm font-medium">
+                    {{ imovel.tipo }}
+                </div>
+                <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-4">
+                    <span class="text-white font-bold text-xl">{{ imovel.preco_formatado }}</span>
+                </div>
+            </div>
         {% endif %}
+    {% endwith %}
+    <div class="p-6">
+        <h3 class="font-bold text-xl mb-2">{{ imovel.titulo }}</h3>
+        <p class="text-gray-600 mb-4 line-clamp-2">{{ imovel.descricao|truncatewords:20 }}</p>
+        <p class="text-gray-500 text-sm mb-4 flex items-center">
+            <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i> {{ imovel.cidade }}
+        </p>
+        <div class="flex justify-between items-center text-gray-600 mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-bed mr-1"></i>
+                <span>{{ imovel.quartos }} quartos</span>
+            </div>
+            <div class="flex items-center">
+                <i class="fas fa-bath mr-1"></i>
+                <span>{{ imovel.banheiros }} banheiros</span>
+            </div>
+        </div>
+        <a href="{% url 'detalhes_imovel' imovel.id %}" 
+           class="inline-block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-300">
+            Ver Detalhes
+        </a>
     </div>
 </div>
+{% empty %}
+<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+    <div class="text-gray-500 text-center">
+        <i class="fas fa-search text-5xl mb-4 text-gray-400"></i>
+        <h3 class="text-2xl font-bold mb-2">Nenhum imóvel encontrado</h3>
+        <p>Não encontramos imóveis com os critérios de busca informados.</p>
+    </div>
+</div>
+{% endfor %}
+                
+            {% else %}
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                    <div class="text-gray-500 text-center">
+                        <i class="fas fa-search text-5xl mb-4 text-gray-400"></i>
+                        <h3 class="text-2xl font-bold mb-2">Nenhum imóvel encontrado</h3>
+                        <p>Não encontramos imóveis com os critérios de busca informados.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-16 bg-blue-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Quer vender ou alugar seu imóvel?</h2>
+        <p class="text-xl mb-8 max-w-2xl mx-auto">Conte com nossa equipe especializada para valorizar seu imóvel e encontrar o comprador ideal.</p>
+        <a href="#" class="inline-block bg-white text-blue-600 font-bold px-8 py-3 rounded-full hover:bg-gray-100 transition duration-300">
+            Anuncie seu imóvel
+        </a>
+    </div>
+</section>
+
+<!-- Depoimentos -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-2">O que nossos clientes dizem</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Conheça as experiências de quem já realizou o sonho da casa própria com a Palestra Imobiliária.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <div class="flex mb-4">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"Excelente atendimento e profissionalismo durante todo o processo de compra do meu apartamento. Recomendo a todos!"</p>
+                <div class="flex items-center">
+                    <div class="bg-blue-100 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">RP</span>
+                    </div>
+                    <div>
+                        <h4 class="font-medium">Roberto Pereira</h4>
+                        <p class="text-sm text-gray-500">Cliente desde 2023</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <div class="flex mb-4">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"Encontramos nossa casa dos sonhos com rapidez e facilidade. Os corretores são muito atenciosos e prestativos!"</p>
+                <div class="flex items-center">
+                    <div class="bg-blue-100 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">CS</span>
+                    </div>
+                    <div>
+                        <h4 class="font-medium">Carla Santos</h4>
+                        <p class="text-sm text-gray-500">Cliente desde 2024</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <div class="flex mb-4">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <i class="fas fa-star-half-alt text-yellow-400"></i>
+                </div>
+                <p class="text-gray-600 mb-6">"O processo de compra foi tranquilo e transparente. A imobiliária cuidou de toda a burocracia e me manteve informado a cada passo."</p>
+                <div class="flex items-center">
+                    <div class="bg-blue-100 rounded-full h-12 w-12 flex items-center justify-center mr-4">
+                        <span class="font-bold text-blue-600">MA</span>
+                    </div>
+                    <div>
+                        <h4 class="font-medium">Marcos Almeida</h4>
+                        <p class="text-sm text-gray-500">Cliente desde 2022</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Aqui você pode adicionar scripts específicos para a página inicial
+    // Por exemplo, um slider de imagens ou funcionalidades específicas
+</script>
 {% endblock %}
