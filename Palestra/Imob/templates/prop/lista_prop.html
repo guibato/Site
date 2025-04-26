@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Proprietários | Palestra Imóveis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .status-active {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    .status-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold font-heading text-primary-dark mb-2">Proprietários</h1>
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-primary">
+                                <i class="fas fa-home mr-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                                <span class="ml-1 md:ml-2 text-gray-800">Proprietários</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <a href="{% url 'cadastrar_proprietario' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none">
+                    <i class="fas fa-plus mr-2"></i>
+                    Novo Proprietário
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700 border-green-400{% elif message.tags == 'error' %}bg-red-100 text-red-700 border-red-400{% else %}bg-blue-100 text-blue-700 border-blue-400{% endif %} border-l-4 rounded">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-gray-50">
+                <div class="flex justify-between items-center">
+                    <div class="w-full md:w-1/3">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="search-proprietarios" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm" placeholder="Buscar proprietários...">
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">Status:</span>
+                        <select id="filter-status" class="text-sm border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                            <option value="">Todos</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="inativo">Inativos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF/CNPJ</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for proprietario in proprietarios %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ proprietario.nome }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ proprietario.documento|default:"-" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">
+                                    {% if proprietario.telefone %}
+                                        <div><i class="fas fa-phone-alt mr-2"></i>{{ proprietario.telefone }}</div>
+                                    {% endif %}
+                                    {% if proprietario.email %}
+                                        <div><i class="fas fa-envelope mr-2"></i>{{ proprietario.email }}</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if proprietario.ativo %}
+                                    <span class="status-badge status-active">Ativo</span>
+                                {% else %}
+                                    <span class="status-badge status-inactive">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="{% url 'editar_proprietario' proprietario.id %}" class="text-primary hover:text-primary-dark mr-3">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'visualizar_proprietario' proprietario.id %}" class="text-blue-500 hover:text-blue-700 mr-3">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-red-500 hover:text-red-700" onclick="confirmarExclusao({{ proprietario.id }})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-user-slash text-4xl mb-3 text-gray-400"></i>
+                                    <p class="text-lg">Nenhum proprietário cadastrado.</p>
+                                    <p class="text-sm mt-1">Clique no botão "Novo Proprietário" para adicionar.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if proprietarios.has_other_pages %}
+            <div class="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        {% if proprietarios.has_previous %}
+                            <a href="?page={{ proprietarios.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Anterior</a>
+                        {% endif %}
+                        {% if proprietarios.has_next %}
+                            <a href="?page={{ proprietarios.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Próximo</a>
+                        {% endif %}
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Mostrando <span class="font-medium">{{ proprietarios.start_index }}</span> a <span class="font-medium">{{ proprietarios.end_index }}</span> de <span class="font-medium">{{ proprietarios.paginator.count }}</span> proprietários
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                {% if proprietarios.has_previous %}
+                                    <a href="?page={{ proprietarios.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Anterior</span>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                {% endif %}
+                                
+                                {% for i in proprietarios.paginator.page_range %}
+                                    {% if proprietarios.number == i %}
+                                        <a href="#" aria-current="page" class="z-10 bg-primary border-primary text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ i }}</a>
+                                    {% elif i > proprietarios.number|add:'-3' and i < proprietarios.number|add:'3' %}
+                                        <a href="?page={{ i }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">{{ i }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if proprietarios.has_next %}
+                                    <a href="?page={{ proprietarios.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Próximo</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div id="modal-exclusao" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Confirmar exclusão</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">Tem certeza que deseja excluir este proprietário? Esta ação não pode ser desfeita.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <form id="form-exclusao" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Excluir
+                    </button>
+                </form>
+                <button type="button" onclick="fecharModalExclusao()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmarExclusao(id) {
+        document.getElementById('form-exclusao').action = "{% url 'excluir_proprietario' 0 %}".replace('0', id);
+        document.getElementById('modal-exclusao').classList.remove('hidden');
+    }
+    
+    function fecharModalExclusao() {
+        document.getElementById('modal-exclusao').classList.add('hidden');
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Implementação da busca
+        const searchInput = document.getElementById('search-proprietarios');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const nome = row.querySelector('td:first-child').textContent.toLowerCase();
+                    const documento = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    
+                    if (nome.includes(searchTerm) || documento.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Implementação do filtro de status
+        const filterStatus = document.getElementById('filter-status');
+        if (filterStatus) {
+            filterStatus.addEventListener('change', function() {
+                const status = this.value;
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    if (status === '') {
+                        row.style.display = '';
+                        return;
+                    }
+                    
+                    const statusCell = row.querySelector('td:nth-child(4) .status-badge');
+                    if (!statusCell) return;
+                    
+                    const isActive = statusCell.classList.contains('status-active');
+                    
+                    if ((status === 'ativo' && isActive) || (status === 'inativo' && !isActive)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

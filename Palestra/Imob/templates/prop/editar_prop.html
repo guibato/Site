@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Proprietário | Palestra Imóveis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .required-field::after {
+        content: "*";
+        color: red;
+        margin-left: 4px;
+    }
+    .form-section {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-section:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold font-heading text-primary-dark mb-2">Editar Proprietário</h1>
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-primary">
+                            <i class="fas fa-home mr-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                            <a href="{% url 'listar_proprietarios' %}" class="ml-1 md:ml-2 text-gray-500 hover:text-primary">
+                                Proprietários
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                            <span class="ml-1 md:ml-2 text-gray-800">Editar Proprietário</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 {% if message.tags == 'success' %}bg-green-100 text-green-700 border-green-400{% elif message.tags == 'error' %}bg-red-100 text-red-700 border-red-400{% else %}bg-blue-100 text-blue-700 border-blue-400{% endif %} border-l-4 rounded">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <form method="post" id="proprietario-form">
+                {% csrf_token %}
+                
+                <!-- Seção de Informações Básicas -->
+                <div class="form-section">
+                    <h2 class="text-xl font-semibold mb-4 text-primary-dark">Informações Básicas</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.nome.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1 required-field">Nome</label>
+                            {{ form.nome }}
+                            {% if form.nome.errors %}
+                                <p class="text-red-500 text-xs italic mt-1">{{ form.nome.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ form.documento.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+                            {{ form.documento }}
+                            {% if form.documento.errors %}
+                                <p class="text-red-500 text-xs italic mt-1">{{ form.documento.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Contato -->
+                <div class="form-section">
+                    <h2 class="text-xl font-semibold mb-4 text-primary-dark">Informações de Contato</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.telefone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            {{ form.telefone }}
+                            {% if form.telefone.errors %}
+                                <p class="text-red-500 text-xs italic mt-1">{{ form.telefone.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <p class="text-red-500 text-xs italic mt-1">{{ form.email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Observações -->
+                <div class="form-section">
+                    <h2 class="text-xl font-semibold mb-4 text-primary-dark">Observações</h2>
+                    <div>
+                        <label for="{{ form.observacoes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                        {{ form.observacoes }}
+                        {% if form.observacoes.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ form.observacoes.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center">
+                            {{ form.ativo }}
+                            <label for="{{ form.ativo.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700">Proprietário Ativo</label>
+                            {% if form.ativo.errors %}
+                                <p class="text-red-500 text-xs italic mt-1">{{ form.ativo.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de ação -->
+                <div class="flex justify-end mt-8 space-x-4">
+                    <a href="{% url 'listar_proprietarios' %}" class="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        Cancelar
+                    </a>
+                    <button type="button" onclick="confirmarExclusao()" class="px-6 py-2 border border-red-500 rounded-md shadow-sm text-sm font-medium text-red-500 bg-white hover:bg-red-50 focus:outline-none">
+                        Excluir
+                    </button>
+                    <button type="submit" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div id="modal-exclusao" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Confirmar exclusão</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">Tem certeza que deseja excluir o proprietário "{{ proprietario.nome }}"? Esta ação não pode ser desfeita.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <form id="form-exclusao" method="post" action="{% url 'excluir_proprietario' proprietario.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Excluir
+                    </button>
+                </form>
+                <button type="button" onclick="fecharModalExclusao()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmarExclusao() {
+        document.getElementById('modal-exclusao').classList.remove('hidden');
+    }
+    
+    function fecharModalExclusao() {
+        document.getElementById('modal-exclusao').classList.add('hidden');
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formatação para telefone
+        const telefoneInput = document.getElementById('{{ form.telefone.id_for_label }}');
+        if (telefoneInput) {
+            telefoneInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.substring(0, 11);
+                
+                if (value.length > 2) {
+                    value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+                }
+                if (value.length > 10) {
+                    value = value.substring(0, 10) + '-' + value.substring(10);
+                }
+                this.value = value;
+            });
+        }
+        
+        // Formatação para CPF/CNPJ
+        const documentoInput = document.getElementById('{{ form.documento.id_for_label }}');
+        if (documentoInput) {
+            documentoInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                
+                if (value.length <= 11) { // CPF
+                    if (value.length > 9) {
+                        value = value.substring(0, 3) + '.' + 
+                                value.substring(3, 6) + '.' + 
+                                value.substring(6, 9) + '-' + 
+                                value.substring(9);
+                    } else if (value.length > 6) {
+                        value = value.substring(0, 3) + '.' + 
+                                value.substring(3, 6) + '.' + 
+                                value.substring(6);
+                    } else if (value.length > 3) {
+                        value = value.substring(0, 3) + '.' + 
+                                value.substring(3);
+                    }
+                } else { // CNPJ
+                    if (value.length > 12) {
+                        value = value.substring(0, 2) + '.' + 
+                                value.substring(2, 5) + '.' + 
+                                value.substring(5, 8) + '/' + 
+                                value.substring(8, 12) + '-' + 
+                                value.substring(12);
+                    } else if (value.length > 8) {
+                        value = value.substring(0, 2) + '.' + 
+                                value.substring(2, 5) + '.' + 
+                                value.substring(5, 8) + '/' + 
+                                value.substring(8);
+                    } else if (value.length > 5) {
+                        value = value.substring(0, 2) + '.' + 
+                                value.substring(2, 5) + '.' + 
+                                value.substring(5);
+                    } else if (value.length > 2) {
+                        value = value.substring(0, 2) + '.' + 
+                                value.substring(2);
+                    }
+                }
+                
+                this.value = value;
+            });
+        }
+    });
+</script>
+{% endblock %}

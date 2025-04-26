@@ -6,51 +6,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Palestra Imóveis{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lightbox CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/css/lightbox.min.css" rel="stylesheet">
+
+    <!-- Lightbox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#36C4F5',
+                        'primary-dark': '#1A5276',
+                        'neutral-light': '#F5F5F5',
+                        'neutral-dark': '#333333',
+                    },
+                    fontFamily: {
+                        'heading': ['Montserrat', 'sans-serif'],
+                        'body': ['Open Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    {% block extra_css %}{% endblock %}
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+    <!-- Botão Flutuante do WhatsApp -->
+<a href="https://api.whatsapp.com/send?phone=551120974947&text=Olá!%20Gostaria%20de%20mais%20informações%20sobre%20os%20imóveis."
+class="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition duration-300"
+target="_blank" rel="noopener noreferrer"
+aria-label="Fale conosco pelo WhatsApp">
+<i class="fab fa-whatsapp text-2xl"></i>
+</a>
+
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans flex flex-col min-h-screen">
+<body class="bg-neutral-light text-neutral-dark font-body flex flex-col min-h-screen">
     <!-- Navbar -->
-    <!-- Navbar -->
-<nav class="bg-white shadow-md">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <a href="/" class="flex items-center space-x-2">
-            <img src="{% static 'images/logo.png' %}" alt="Palestra Imóveis Logo" class="h-12">
-            <span class="text-2xl font-bold text-blue-500">Palestra Imóveis</span>
-        </a>
-        <div class="flex items-center">
-            <ul class="flex space-x-6 mr-6">
-                <li><a href="{% url 'lista_imoveis' %}" class="hover:text-blue-700 font-medium">Imóveis</a></li>
-                <li><a href="#" class="hover:text-blue-700 font-medium">Comprar</a></li>
-                <li><a href="#" class="hover:text-blue-700 font-medium">Alugar</a></li>
-                <li><a href="#" class="hover:text-blue-700 font-medium">Contato</a></li>
-            </ul>
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <img src="{% static 'images/logo.png' %}" alt="Palestra Imóveis Logo" class="h-12">
+                    <span class="text-2xl font-bold text-primary font-heading">Palestra Imóveis</span>
+                </a>
+                <div class="hidden md:flex items-center">
+                    <ul class="flex space-x-6 mr-6">
+                        <li><a href="{% url 'lista_imoveis' %}" class="hover:text-primary font-medium">Imóveis</a></li>
+                        <li><a href="http://127.0.0.1:8000/?objetivo=comprar&endereco=&tipo=&preco=" class="hover:text-primary font-medium">Comprar</a></li>
+                        <li><a href="http://127.0.0.1:8000/?objetivo=alugar&endereco=&tipo=&preco=" class="hover:text-primary font-medium">Alugar</a></li>
+                        <li><a href="https://api.whatsapp.com/send?phone=551120974947&text=Olá!%20Gostaria%20de%20mais%20informações%20sobre%20os%20imóveis." class="hover:text-primary font-medium">Contato</a></li>
+                    </ul>
+                    
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="text-primary hover:text-primary-dark mr-4">Dashboard</a>
+                        <a href="{% url 'logout' %}" class="bg-neutral-dark hover:bg-gray-600 text-white px-4 py-2 rounded-md">Sair</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md">Área Administrativa</a>
+                    {% endif %}
+                </div>
+                <!-- Menu mobile -->
+                <button id="mobile-menu-button" class="md:hidden text-neutral-dark">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
             
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="text-blue-600 hover:text-blue-800 mr-4">Dashboard</a>
-                <a href="{% url 'logout' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">Sair</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Área Administrativa</a>
-            {% endif %}
+            <!-- Menu mobile expandido (escondido por padrão) -->
+            <div id="mobile-menu" class="md:hidden hidden pt-4 pb-2">
+                <ul class="space-y-3">
+                    <li><a href="{% url 'lista_imoveis' %}" class="block hover:text-primary font-medium">Imóveis</a></li>
+                    <li><a href="#" class="block hover:text-primary font-medium">Comprar</a></li>
+                    <li><a href="#" class="block hover:text-primary font-medium">Alugar</a></li>
+                    <li><a href="#" class="block hover:text-primary font-medium">Contato</a></li>
+                </ul>
+                <div class="mt-4 space-y-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="block text-primary hover:text-primary-dark">Dashboard</a>
+                        <a href="{% url 'logout' %}" class="block bg-neutral-dark hover:bg-gray-600 text-white px-4 py-2 rounded-md text-center">Sair</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="block bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md text-center">Área Administrativa</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Conteúdo Principal -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
+    <main class="flex-grow">
         {% block content %}
         {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-8">
+    <footer class="bg-neutral-dark text-white py-8">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <img src="{% static 'images/logo.png' %}" alt="Palestra Imóveis Logo" class="h-16 mb-4">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="{% static 'images/logo.png' %}" alt="Palestra Imóveis Logo" class="h-12 brightness-200">
+                        <span class="text-xl font-bold text-white font-heading">Palestra Imóveis</span>
+                    </div>
                     <p class="text-gray-400">Sua imobiliária de confiança para encontrar o imóvel dos seus sonhos.</p>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Links Rápidos</h3>
+                    <h3 class="text-lg font-bold mb-4 font-heading">Links Rápidos</h3>
                     <ul class="space-y-2">
                         <li><a href="/" class="text-gray-400 hover:text-white">Início</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white">Imóveis</a></li>
@@ -59,7 +133,7 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Categorias</h3>
+                    <h3 class="text-lg font-bold mb-4 font-heading">Categorias</h3>
                     <ul class="space-y-2">
                         <li><a href="#" class="text-gray-400 hover:text-white">Apartamentos</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white">Casas</a></li>
@@ -68,17 +142,26 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Contato</h3>
-                    <p class="text-gray-400 mb-2">Rua Exemplo, 123</p>
-                    <p class="text-gray-400 mb-2">São Paulo, SP</p>
-                    <p class="text-gray-400 mb-2">contato@minhaimobiliaria.com</p>
-                    <p class="text-gray-400">(11) 99999-9999</p>
+                    <h3 class="text-lg font-bold mb-4 font-heading">Contato</h3>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-map-marker-alt mr-2"></i> Rua Serra de Bragança, 1814</p>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-map-marker-alt mr-2"></i> São Paulo, SP</p>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-envelope mr-2"></i> contato@palestraimoveis.com.br</p>
+                    <p class="text-gray-400"><i class="fas fa-phone mr-2"></i> (11) 2097-4947</p>
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-6 text-center">
-                <p>&copy; 2023 Palestra Imóveis. Todos os direitos reservados.</p>
+                <p>&copy; 2025 Palestra Imóveis. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Toggle Menu Mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

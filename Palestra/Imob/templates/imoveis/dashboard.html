@@ -14,6 +14,12 @@
                 </svg>
                 Novo Imóvel
             </a>
+            <a href="{% url 'cadastrar_proprietario' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                Novo Proprietário
+            </a>
             <a href="{% url 'logout' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">Sair</a>
         </div>
     </div>
@@ -32,7 +38,7 @@
         <table class="min-w-full bg-white rounded-lg overflow-hidden">
             <thead class="bg-gray-100 text-gray-700">
                 <tr>
-                    <th class="py-3 px-4 text-left">Título</th>
+                    <th class="py-3 px-4 text-left">Endereço</th>
                     <th class="py-3 px-4 text-left">Tipo</th>
                     <th class="py-3 px-4 text-left">Negócio</th>
                     <th class="py-3 px-4 text-right">Preço</th>
@@ -43,10 +49,10 @@
             <tbody class="divide-y divide-gray-200">
                 {% for imovel in imoveis %}
                 <tr class="hover:bg-gray-50">
-                    <td class="py-3 px-4">{{ imovel.titulo }}</td>
+                    <td class="py-3 px-4">{{ imovel.endereco }}</td>
                     <td class="py-3 px-4">{{ imovel.get_tipo_display }}</td>
-                    <td class="py-3 px-4">{{ imovel.get_negocio_display }}</td>
-                    <td class="py-3 px-4 text-right">R$ {{ imovel.preco|floatformat:2 }}</td>
+                    <td class="py-3 px-4">{{ imovel.get_finalidade_display }}</td>
+                    <td class="py-3 px-4 text-right"> {{ imovel.preco_formatado }}</td>
                     <td class="py-3 px-4 text-center">
                         {% if imovel.destaque %}
                         <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Sim</span>

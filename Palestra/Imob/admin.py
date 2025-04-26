@@ -7,10 +7,10 @@ class FotoImovelInline(admin.TabularInline):
 
 @admin.register(Imovel)
 class ImovelAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'tipo', 'negocio', 'preco']  # Remove 'status'
-    list_filter = ['tipo', 'negocio', 'destaque']
-    search_fields = ['titulo', 'endereco', 'bairro', 'cidade']
-    inlines = [FotoImovelInline]
+    list_display = ['id', 'tipo', 'descricao', 'cidade', 'estado', 'ativo']
+    list_filter = ['tipo', 'cidade', 'estado', 'ativo']
+    search_fields = ['descricao', 'endereco', 'cidade', 'estado']
+
 
 @admin.register(FotoImovel)
 class FotoImovelAdmin(admin.ModelAdmin):

@@ -17,4 +17,11 @@ urlpatterns = [
     path('imovel/<int:imovel_id>/editar/', views.editar_imovel, name='editar_imovel'),
     
     path('imovel/<int:imovel_id>/excluir/', views.excluir_imovel, name='excluir_imovel'),
+    path('proprietarios/cadastrar/', views.cadastrar_proprietario, name='cadastrar_proprietario'),
+    path('proprietarios/', views.listar_proprietarios, name='listar_proprietarios'),
+    path('proprietarios/<int:id>/editar/', views.editar_proprietario, name='editar_proprietario'),
+    path('proprietarios/<int:id>/visualizar/', views.visualizar_proprietario, name='visualizar_proprietario'),
+    path('proprietarios/<int:id>/excluir/', views.excluir_proprietario, name='excluir_proprietario'),
+    path('imovel/<int:imovel_id>/fotos/', views.upload_fotos_imovel, name='upload_fotos_imovel'),
+    path('imovel/upload_ajax/', views.upload_foto_ajax, name='upload_foto_ajax'),
 ]

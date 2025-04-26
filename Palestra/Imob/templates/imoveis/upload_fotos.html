@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-xl font-bold mb-4">Upload de Fotos para: {{ imovel }}</h2>
+
+<form action="{% url 'upload_foto_ajax' %}" class="dropzone" id="foto-dropzone">
+    {% csrf_token %}
+    <input type="hidden" name="imovel_id" value="{{ imovel.id }}">
+</form>
+
+<div id="mensagem-upload" class="hidden p-3 mt-4 bg-green-100 text-green-800 rounded shadow">
+    Upload concluído com sucesso!
+</div>
+
+
+<!-- Dropzone Assets -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
+
+<!-- Dropzone Config -->
+<script>
+Dropzone.options.fotoDropzone = {
+    paramName: "file",
+    maxFilesize: 50, // MB
+    acceptedFiles: 'image/*,video/*',
+    init: function () {
+        this.on("queuecomplete", function () {
+            const mensagem = document.getElementById("mensagem-upload");
+            mensagem.innerText = "Upload concluído com sucesso!";
+            mensagem.classList.remove("hidden");
+        });
+
+        this.on("success", function(file, response) {
+            console.log("Enviado com sucesso:", response);
+        });
+
+        this.on("error", function(file, response) {
+            console.error("Erro ao enviar:", response);
+        });
+    }
+};
+</script>
+{% endblock %}
